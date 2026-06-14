@@ -27,10 +27,7 @@ The file `vars/custom_monitor.yml` contains the configurable values, such as:
 - retention count
 - rotation frequency
 - owner/group/mode
-- optional max size
-- optional date extension settings
 
-This makes the solution cleaner and easier to modify during an interview or in production.
 
 ## Before running
 
@@ -120,58 +117,3 @@ Validate logrotate config manually:
 ```bash
 sudo logrotate -d /etc/logrotate.d/custom-monitor
 ```
-
-## Optional live interview changes
-
-### Change retention from 7 to 14
-
-Edit `vars/custom_monitor.yml`:
-
-```yaml
-custom_monitor_retention_count: 14
-```
-
-Run:
-
-```bash
-ansible-playbook -i inventory.yml logrotate.yml
-```
-
-### Add size-based protection
-
-Edit `vars/custom_monitor.yml`:
-
-```yaml
-custom_monitor_maxsize: 100M
-```
-
-This renders the following into the logrotate config:
-
-```conf
-maxsize 100M
-```
-
-### Enable date-based rotated log names
-
-Edit `vars/custom_monitor.yml`:
-
-```yaml
-custom_monitor_dateext: true
-```
-
-This renders:
-
-```conf
-dateext
-dateformat -%Y%m%d
-```
-
-## Important Git reminder
-
-Before committing, always run:
-
-```bash
-git status
-```
-
-Make sure `sre-logrotate-0.pem` is not staged or committed.
