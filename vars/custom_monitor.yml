@@ -1,0 +1,27 @@
+---
+# Variables for custom-monitor logrotate configuration.
+
+# Service details
+custom_monitor_service_name: custom-monitor.service
+
+# Log directory managed by this playbook
+custom_monitor_log_dir: /var/log/custom-monitor
+custom_monitor_log_dir_owner: root
+custom_monitor_log_dir_group: root
+custom_monitor_log_dir_mode: "0755"
+
+# Logrotate configuration file path
+custom_monitor_logrotate_config: /etc/logrotate.d/custom-monitor
+
+# Logrotate behavior
+custom_monitor_rotation_frequency: daily
+custom_monitor_retention_count: 7
+custom_monitor_compress: true
+custom_monitor_missingok: true
+custom_monitor_notifempty: true
+custom_monitor_sharedscripts: true
+
+# New log file created after rotation
+custom_monitor_log_file_mode: "0644"
+custom_monitor_log_file_owner: root
+custom_monitor_log_file_group: root

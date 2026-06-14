@@ -1,0 +1,10 @@
+---
+all:
+  hosts:
+    sre-log-rotate:
+      ansible_host: 3.98.94.59
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: ./sre-logrotate-0.pem
+      ansible_python_interpreter: /usr/bin/python3
+      # Accept the host key on first SSH connection.
+      ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"

@@ -1,0 +1,26 @@
+# Managed by Ansible. Do not edit manually.
+# Rotates custom-monitor service logs in {{ custom_monitor_log_dir }}.
+
+{{ custom_monitor_log_dir }}/*.log {
+    {{ custom_monitor_rotation_frequency }}
+    rotate {{ custom_monitor_retention_count }}
+{% if custom_monitor_compress %}
+    compress
+{% endif %}
+{% if custom_monitor_missingok %}
+    missingok
+{% endif %}
+{% if custom_monitor_notifempty %}
+    notifempty
+{% endif %}
+    create {{ custom_monitor_log_file_mode }} {{ custom_monitor_log_file_owner }} {{ custom_monitor_log_file_group }}
+{% if custom_monitor_sharedscripts %}
+    sharedscripts
+{% endif %}
+
+    postrotate
+        if systemctl is-active --quiet {{ custom_monitor_service_name }}; then
+            systemctl reload {{ custom_monitor_service_name }} >/dev/null 2>&1 || systemctl restart {{ custom_monitor_service_name }} >/dev/null 2>&1 || true
+        fi
+    endscript
+}

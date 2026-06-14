@@ -1,0 +1,17 @@
+# Do not commit private keys
+*.pem
+*.key
+id_rsa*
+
+# Ansible temporary/retry files
+*.retry
+.retry
+
+# macOS
+.DS_Store
+
+# Python/cache/editor files
+__pycache__/
+*.pyc
+.vscode/
+.idea/

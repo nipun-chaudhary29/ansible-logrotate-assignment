@@ -1,0 +1,71 @@
+---
+# Ansible Reliability Engineering homework assignment
+# Purpose: configure log management for custom-monitor.service using logrotate.
+# Variables are intentionally kept separate from tasks in vars/custom_monitor.yml.
+
+- name: Configure logrotate for custom-monitor service logs
+  hosts: sre-log-rotate
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - vars/custom_monitor.yml
+
+  tasks:
+    - name: Ensure logrotate package is installed
+      ansible.builtin.package:
+        name: logrotate
+        state: present
+      tags:
+        - install
+        - logrotate
+
+    - name: Ensure custom-monitor log directory exists with correct permissions
+      ansible.builtin.file:
+        path: "{{ custom_monitor_log_dir }}"
+        state: directory
+        owner: "{{ custom_monitor_log_dir_owner }}"
+        group: "{{ custom_monitor_log_dir_group }}"
+        mode: "{{ custom_monitor_log_dir_mode }}"
+      tags:
+        - configure
+        - logrotate
+
+    - name: Deploy logrotate configuration for custom-monitor logs from template
+      ansible.builtin.template:
+        src: templates/custom-monitor-logrotate.j2
+        dest: "{{ custom_monitor_logrotate_config }}"
+        owner: root
+        group: root
+        mode: "0644"
+        validate: "/usr/sbin/logrotate -d %s"
+      tags:
+        - configure
+        - logrotate
+
+    - name: Check custom-monitor log directory status
+      ansible.builtin.stat:
+        path: "{{ custom_monitor_log_dir }}"
+      register: custom_monitor_log_dir_stat
+      tags:
+        - validate
+        - logrotate
+
+    - name: Assert custom-monitor log directory exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - custom_monitor_log_dir_stat.stat.exists
+          - custom_monitor_log_dir_stat.stat.isdir
+          - custom_monitor_log_dir_stat.stat.mode == custom_monitor_log_dir_mode
+        fail_msg: "{{ custom_monitor_log_dir }} is missing or does not have mode {{ custom_monitor_log_dir_mode }}"
+        success_msg: "{{ custom_monitor_log_dir }} exists with mode {{ custom_monitor_log_dir_mode }}"
+      tags:
+        - validate
+        - logrotate
+
+    - name: Verify logrotate configuration syntax in debug mode
+      ansible.builtin.command: "/usr/sbin/logrotate -d {{ custom_monitor_logrotate_config }}"
+      changed_when: false
+      tags:
+        - validate
+        - logrotate
